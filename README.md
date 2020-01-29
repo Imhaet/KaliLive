@@ -97,7 +97,6 @@ mount /dev/mapper/my_usb /mnt/my_kali
 
 ```
 sudo nano /mnt/my_kali/persistence.conf
-
 ```
 ```
 / union
