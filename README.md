@@ -89,8 +89,8 @@ sudo e2label /dev/mapper/my_kali persistence
 10. Create a mount point, mount our new encrypted partition there.
 
 ```
-mkdir -p /mnt/my_kali
-mount /dev/mapper/my_usb /mnt/my_kali
+sudo mkdir -p /mnt/my_kali
+sudo mount /dev/mapper/my_kali /mnt/my_kali
 ```
 
 11. Create and set up the persistence.conf file. We're using `nano` here because `echo` has rights problems on my system. Add the line `/ union` on the file save and exit.
@@ -102,7 +102,7 @@ sudo nano /mnt/my_kali/persistence.conf
 / union
 ```
 
-12. *^X* to **exit**, then **save** :floppy_disk: the file as `/mnt/my_kali/persistence.conf`
+12. *Ctrl+X* to **exit**, then **save** :floppy_disk: the file as `/mnt/my_kali/persistence.conf`
 
 13. Unmount the partition.
 
