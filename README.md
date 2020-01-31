@@ -119,3 +119,7 @@ sudo cryptsetup luksClose /dev/mapper/my_kali
 <br />
 
 :tada: That’s really all there is to it! To use the persistent data features, simply plug your USB drive into the computer you want to boot up Kali Live on — make sure your BIOS is set to boot from your USB device — and fire it up. When the Kali Linux boot screen is displayed, choose the persistent option you set up on your USB drive, either normal or encrypted.
+
+* Note: If you need to change the passphrase on the LUKS drive, open a terminal and run the `sudo cryptsetup luksChangeKey /dev/sd3` command. First, you’ll be prompted to enter your existing passphrase. Then, you can create a new one.
+
+:octocat:
