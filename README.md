@@ -22,7 +22,8 @@ This guide is mainly based (mostly just copy pasted actually) on Kali's document
 
 ## KALI LINUX LIVE USB INSTALL PROCEDURE
 
-The specifics of this procedure will vary depending on whether you’re doing it on a Windows, Linux, or OS X system. *I am just focusing on the procedure for creating the USB Live on Windows at the moment.*
+The specifics of this procedure will vary depending on whether you’re doing it on a Windows, Linux, or OS X system.
+*I am just focusing on the procedure for creating the USB Live in Windows at the moment.*
 
 <br />
 
@@ -34,6 +35,7 @@ The specifics of this procedure will vary depending on whether you’re doing it
 
 The reason I am using Etcher for this instead of any other procedure is because it manipulates the USB drive in a different way than other software like Rufus. If you open the *Disk Management* on Windows you'll notice that Etcher has created 2 partitions on the USB drive, one that is aprox 2.7GB (Kali Live) and has the rest of the drive in an unallocated partition.
 
+*The rest is done in Linux*
 ---
 
 <br />
@@ -54,7 +56,7 @@ The reason I am using Etcher for this instead of any other procedure is because 
 
 We'll be creating a LUKS-encrypted persistent storage area. The idea is to add an extra layer of security to any sensitive file when traveling with Kali Live. We'll create a new partition to store the persistent data into, starting right above the second Kali Live partition for the rest of the USB, set up LUKS encryption on the new partition, put an ext3 file system onto it, and create a **persistence.conf** file on it. All this based on Kali's [instructions](https://www.kali.org/docs/usb/kali-linux-live-usb-persistence/).
 
-1. Image the latest Kali Linux ISO (currently 2020.1) to your USB drive as described in [this article](https://www.kali.org/docs/usb/kali-linux-live-usb-install/).
+1. Image the latest Kali Linux ISO (currently 2020.1) to your USB drive as described in [this article](https://www.kali.org/docs/usb/kali-linux-live-usb-install/) (or as above).
 
 2. Make sure that your Kali Live USB runs fine by booting into it at least once.
 
@@ -70,31 +72,32 @@ sudo cfdisk /dev/sdb
 
 6. *Enter* again so select `primary` as the partition type. The partition is now named **/dev/sdb3** with a **Linux** type.
 
-7. Select `Write` and then type `yes` to confirm the changes; finally `Quit`.
+7. Select `Write` and type `yes` to confirm the changes; finally `Quit`.
 
-8. **Time for the encryption**. Initialize the LUKS encryption on the newly-created partition. You’ll be warned that this will overwrite any data on the partion. When prompted whether you want to proceed, type “YES” (all upper case). Enter your selected passphrase twice when asked to do so, and be sure to pick a passphrase you’re going to remember: if you forget it, your data will still be persistent, just irretrievable (and unusable).
-
+8. **Time for the encryption**. Initialize the LUKS encryption on the newly-created partition.
 ```
 sudo cryptsetup --verbose --verify-passphrase luksFormat /dev/sdb3
+```
+You’ll be warned that this will overwrite any data on the partion. When prompted whether you want to proceed, type “YES” (all upper case). Enter your selected passphrase twice when asked to do so, and be sure to pick a passphrase you’re going to remember: if you forget it, your data will still be persistent, just irretrievable (and unusable).
+
+9. Open the encrypted channel to our persistence partition. I am using `my_kali` as the label, but you can use whatever you want.
+```
 sudo cryptsetup luksOpen /dev/sdb3 my_kali
 ```
 
-9. Now we need to format the partition. Create the ext3 filesystem, and label it “persistence”.
-
+10. Now we need to format the partition. Create the ext3 filesystem, and label it “persistence”.
 ```
 sudo mkfs.ext3 -L persistence /dev/mapper/my_kali
 sudo e2label /dev/mapper/my_kali persistence
 ```
 
-10. Create a mount point, mount our new encrypted partition there.
-
+11. Create a mount point, mount our new encrypted partition there.
 ```
 sudo mkdir -p /mnt/my_kali
 sudo mount /dev/mapper/my_kali /mnt/my_kali
 ```
 
-11. Create and set up the persistence.conf file. We're using `nano` here because `echo` has rights problems on my system. Add the line `/ union` on the file save and exit.
-
+12. Create and set up the persistence.conf file. I'm using `nano` here because `echo` has rights problems on my system. Add the line `/ union` on the file, **save** :floppy_disk: the file as `/mnt/my_kali/persistence.conf` and exit.
 ```
 sudo nano /mnt/my_kali/persistence.conf
 ```
@@ -102,16 +105,12 @@ sudo nano /mnt/my_kali/persistence.conf
 / union
 ```
 
-12. *Ctrl+X* to **exit**, then **save** :floppy_disk: the file as `/mnt/my_kali/persistence.conf`
-
 13. Unmount the partition.
-
 ```
 sudo umount /dev/mapper/my_kali
 ```
 
 14. Close the encrypted channel to our persistence partition.
-
 ```
 sudo cryptsetup luksClose /dev/mapper/my_kali
 ```
