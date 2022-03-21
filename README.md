@@ -122,3 +122,22 @@ sudo cryptsetup luksClose /dev/mapper/my_kali
 * Note: If you need to change the passphrase on the LUKS drive, open a terminal and run the `sudo cryptsetup luksChangeKey /dev/sd3` command. First, you’ll be prompted to enter your existing passphrase. Then, you can create a new one.
 
 :octocat:
+
+<br />
+
+---
+<br />
+
+# KALI PROCEDURES #
+
+### Reset Windows 10 Local Password
+
+First, your Win10 might not be set up to boot from the USB, so you may need to press a function key (e.g., Esc, F2, F8, F10, etc.) to get into the **BIOS** to change the boot order, then restart again.
+1. After booting from USB, the Kali Linux Boot Menu appears. Choose `Live (forensic mode)`
+2. Open a terminal with root privileges and navigate to the directory where SAM is saved, usually */Windows/System32/Config*. (e.g., */media/root/44B85...D34/Windows/System32/config/*)
+3. Type `chntpw -l SAM`, it will show a lilst of usernames found in the SAM or Win10.
+4. Run the `chntpw -u username SAM` to reset the password. Change *username* to the actual name of the Windows account.
+5. Press `1` to clear the user's password, then `q` to quit and finally `y` to save changes to the SAM.
+6. Reboot and log into windows, the user should log in without a password now.
+
+:octocat:
