@@ -14,9 +14,9 @@ This guide is mainly based (mostly just copy pasted actually) on Kali's document
 
 ---
 <br />
-# FORMATING A USB FOR FLASHING AN ISO #
+# FORMATING A USB FOR FLASHING AN ISO
 
-### In Linux KDE ###
+### In Linux KDE
 sudo fdisk -l - to figure out the disk
 sudo umount  /dev/sdb1 - just in case
 sudo fdisk /dev/sdb
