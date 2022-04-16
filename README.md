@@ -127,6 +127,23 @@ sudo cryptsetup luksClose /dev/mapper/my_kali
 
 ---
 <br />
+# FORMATING A USB FOR FLASHING AN ISO #
+
+### In Linux KDE ###
+sudo fdisk -l - to figure out the disk
+sudo umount  /dev/sdb1 - just in case
+sudo fdisk /dev/sdb
+Command (m for help): 0 -create new empty DOS partition
+Comand (m helo): n -add a new partition
+Select (default p): p   -primary
+Partition number (1-4, default 1): 1
+First sector (x,y): ENTER
+Last sector (x,y): ENER
+w
+
+
+---
+<br />
 
 # KALI PROCEDURES #
 
