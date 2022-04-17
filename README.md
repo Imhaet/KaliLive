@@ -2,19 +2,20 @@
 
 This is a quick personal reference for creating a bootable Kali USB Drive (Kali Live) with Persistence. For a few years I've wanted to have a live Kali that I can take with me anywhere and be able to boot anywhere. New year, fresh new release (without root as the main user), so this is it.
 
-This guide is mainly based (mostly just copy pasted actually) on Kali's documentation that can be found [here](https://www.kali.org/docs/usb/kali-linux-live-usb-install/).
+This guide is mainly based (mostly just copy pasted actually) on Kali's documentation that can be found [here](https://www.kali.org/docs/usb/).
 
 <br />
 
 ### What You’ll Need
 
-1. A *verified* copy of the appropriate ISO image of the latest Kali build image for the system you’ll be running it on: see the details on [downloading official Kali Linux images](https://www.kali.org/docs/introduction/download-official-kali-linux-images/).
+1. A *verified* copy of the appropriate ISO image of the latest Kali build image for the system you’ll be running it on: see the details on [downloading official Kali Linux Live Boot](https://www.kali.org/get-kali/#kali-live).
+   - Don't forget to do a checksum of your file. In Windows run `certutil -hashfile Example.txt SHA256` on the terminal.
 
 2. If you’re running under Windows, you’ll also need to download the [Etcher](https://www.balena.io/etcher/) imaging tool. On Linux and OS X, you can use the dd command, which is pre-installed on those platforms.
    - I am going to do the install using Etcher on Windows.
 
-3. A USB thumb drive, 4GB or larger. (Systems with a direct SD card slot can use an SD card with similar capacity. The procedure is identical.)
-   - I am using a 32GB drive because I am interested in adding an encripted persistence partition on it.
+3. A USB thumb drive, 8GB or larger. (Systems with a direct SD card slot can use an SD card with similar capacity. The procedure is identical.)
+   - I am using a 64GB drive because I am interested in adding an encripted persistence partition on it.
 
 ---
 
@@ -46,15 +47,15 @@ The reason I am using Etcher for this instead of any other procedure is because 
 
 > To make use of the USB persistence options at boot time, you’ll need to do some additional setup on your “Kali Linux Live” USB drive; this article will show you how.
 
-> This guide assumes that you have already created a Kali Linux “Live” USB drive as described in [the doc page for that subject](https://www.kali.org/docs/usb/kali-linux-live-usb-install/). For the purposes of this article, we’ll assume you’re working on a Linux-based system.
+> This guide assumes that you have already created a Kali Linux “Live” USB drive as described in [the doc page for that subject](https://www.kali.org/get-kali/#kali-live). For the purposes of this article, we’ll assume you’re working on a Linux-based system.
 
---- [Kali.org/](https://www.kali.org/docs/usb/kali-linux-live-usb-persistence/) ---
+--- [Kali.org/](https://www.kali.org/docs/usb/usb-persistence/) ---
 
 <br />
 
 ### Adding USB Persistence with LUKS Encryption
 
-We'll be creating a LUKS-encrypted persistent storage area. The idea is to add an extra layer of security to any sensitive file when traveling with Kali Live. We'll create a new partition to store the persistent data into, starting right above the second Kali Live partition for the rest of the USB, set up LUKS encryption on the new partition, put an ext3 file system onto it, and create a **persistence.conf** file on it. All this based on Kali's [instructions](https://www.kali.org/docs/usb/kali-linux-live-usb-persistence/).
+We'll be creating a LUKS-encrypted persistent storage area. The idea is to add an extra layer of security to any sensitive file when traveling with Kali Live. We'll create a new partition to store the persistent data into, starting right above the second Kali Live partition for the rest of the USB, set up LUKS encryption on the new partition, put an ext3 file system onto it, and create a **persistence.conf** file on it. All this based on Kali's [instructions](https://www.kali.org/docs/usb/usb-persistence-encryption/).
 
 1. Image the latest Kali Linux ISO (currently 2020.1) to your USB drive as described in [this article](https://www.kali.org/docs/usb/kali-linux-live-usb-install/) (or as above).
 
@@ -76,30 +77,30 @@ sudo cfdisk /dev/sdb
 
 8. **Time for the encryption**. Initialize the LUKS encryption on the newly-created partition.
 ```
-sudo cryptsetup --verbose --verify-passphrase luksFormat /dev/sdb3
+#: cryptsetup --verbose --verify-passphrase luksFormat /dev/sdb3
 ```
 You’ll be warned that this will overwrite any data on the partion. When prompted whether you want to proceed, type “YES” (all upper case). Enter your selected passphrase twice when asked to do so, and be sure to pick a passphrase you’re going to remember: if you forget it, your data will still be persistent, just irretrievable (and unusable).
 
-9. Open the encrypted channel to our persistence partition. I am using `my_kali` as the label, but you can use whatever you want.
+9. Open the encrypted channel to our persistence partition. I am using `my_usb` as the label, but you can use whatever you want.
 ```
-sudo cryptsetup luksOpen /dev/sdb3 my_kali
+#: cryptsetup luksOpen /dev/sdb3 my_usb
 ```
 
 10. Now we need to format the partition. Create the ext3 filesystem, and label it “persistence”.
 ```
-sudo mkfs.ext3 -L persistence /dev/mapper/my_kali
-sudo e2label /dev/mapper/my_kali persistence
+#: mkfs.ext3 -L persistence /dev/mapper/my_usb
+#: e2label /dev/mapper/my_usb persistence
 ```
 
 11. Create a mount point, mount our new encrypted partition there.
 ```
-sudo mkdir -p /mnt/my_kali
-sudo mount /dev/mapper/my_kali /mnt/my_kali
+#: mkdir -p /mnt/my_usb
+#: mount /dev/mapper/my_usb /mnt/my_usb\
 ```
 
-12. Create and set up the persistence.conf file. I'm using `nano` here because `echo` has rights problems on my system. Add the line `/ union` on the file, **save** :floppy_disk: the file as `/mnt/my_kali/persistence.conf` and exit.
+12. Create and set up the persistence.conf file. I'm using `nano` here because `echo` has rights problems on my system. Add the line `/ union` on the file, **save** :floppy_disk: the file as `/mnt/my_usb/persistence.conf` and exit.
 ```
-sudo nano /mnt/my_kali/persistence.conf
+#: nano /mnt/my_usb/persistence.conf
 ```
 ```
 / union
@@ -107,21 +108,26 @@ sudo nano /mnt/my_kali/persistence.conf
 
 13. Unmount the partition.
 ```
-sudo umount /dev/mapper/my_kali
+#: umount /dev/mapper/my_usb
 ```
 
 14. Close the encrypted channel to our persistence partition.
 ```
-sudo cryptsetup luksClose /dev/mapper/my_kali
+#: cryptsetup luksClose /dev/mapper/my_usb
+```
+
+15. Eject the usb stick
+```
+#: eject /dev/sdb
 ```
 
 <br />
 
-:tada: That’s really all there is to it! To use the persistent data features, simply plug your USB drive into the computer you want to boot up Kali Live on — make sure your BIOS is set to boot from your USB device — and fire it up. When the Kali Linux boot screen is displayed, choose the persistent option you set up on your USB drive, either normal or encrypted.
+That’s really all there is to it! To use the persistent data features, simply plug your USB drive into the computer you want to boot up Kali Live on — make sure your BIOS is set to boot from your USB device — and fire it up. When the Kali Linux boot screen is displayed, choose the persistent option you set up on your USB drive, either normal or encrypted.
 
 * Note: If you need to change the passphrase on the LUKS drive, open a terminal and run the `sudo cryptsetup luksChangeKey /dev/sdb3` command. First, you’ll be prompted to enter your existing passphrase. Then, you can create a new one.
 
-:octocat:
+:tada:
 
 <br />
 
