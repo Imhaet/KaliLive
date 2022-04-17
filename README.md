@@ -36,6 +36,8 @@ The specifics of this procedure will vary depending on whether you’re doing it
 
 The reason I am using Etcher for this instead of any other procedure is because it manipulates the USB drive in a different way than other software like Rufus. If you open the *Disk Management* on Windows you'll notice that Etcher has created 2 partitions on the USB drive, one that is aprox 2.7GB (Kali Live) and has the rest of the drive in an unallocated partition.
 
+<br />
+
 *The rest is done in Linux*
 ---
 
