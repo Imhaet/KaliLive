@@ -24,7 +24,7 @@
   - See your new partition label with the command `lsblk`. In my case it is `/dev/sdb1`. Pay attention to this name as there will not be any protection to prevent you to erase an other disk.
   - Issue the command below to format the new volume:
 > ```
-> #: mkfs.vfat /dev/sdb1  
+> #: mkfs.vfat /dev/sdb1 -L "Silver"
 > ```
 9. Eject the device:
 > ```
