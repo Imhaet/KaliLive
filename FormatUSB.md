@@ -41,8 +41,9 @@ Note: You can check what your disk cache/buffer size is by using `#: hdparm -i /
 4. Select the drive to format with `select disk 2` (in this case the name of the drive is Disk 2).
 5. You can make sure you have selected the drive if you run `list disk` again.
 6. Erase all partitions with the `clean` command.
-7. Create a new partition with the `create partition primary` command.
-8. Format the drive with the desired file system:
+7. Convert from Master Boot Record partition scheme to GUID Partition Table with `convert gpt`.
+8. Create a new partition with the `create partition primary` command.
+9. Format the drive with the desired file system:
 > ```
 > format fs=ntfs
 > ```
